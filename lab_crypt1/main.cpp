@@ -1,23 +1,39 @@
 #include <iostream>
 #include <map>
+#include <string.h>
+#include <vector>
+#include <cmath>
+
 using namespace std;
 
 map<char, int> symbolFrequency(const char *);
 map<string, int> biagramFrequency(const char *);
-
+double symbolEntropy(const vector<double>);
+double biagramEntropy(const vector<double>);
 int main()
 {
     const char *a = "afasfasfasf";
     map <char, int>symbolFrequencyTable = symbolFrequency(a);
+    vector<double> sym_vec = {};
+
     for(auto const &it: symbolFrequencyTable)
     {
-        cout << it.first << " - " << double(it.second) / strlen(a) << endl;
+        double frequency = double(it.second) / strlen(a);
+        cout << it.first << " - " << frequency << endl;
+        sym_vec.push_back(frequency);
+
     }
+    cout << "H1= " << symbolEntropy(sym_vec) << endl;
     map <string, int>biagramFrequencyTable = biagramFrequency(a);
+    vector<double> bia_vec = {};
+
     for(auto const &it: biagramFrequencyTable)
     {
-        cout << it.first << " - " << double(it.second) / biagramFrequencyTable.size() << endl;
+        double frequency = double(it.second) / biagramFrequencyTable.size();
+        cout << it.first << " - " << frequency << endl;
+        bia_vec.push_back(frequency);
     }
+    cout << "H2= " << biagramEntropy(bia_vec) << endl;
 
 }
 
@@ -59,4 +75,23 @@ map<string, int> biagramFrequency(const char *text)
     return frequencyTable;
 }
 
+double symbolEntropy(const vector<double> freq)
+{
+    double result = 0.0;
+    for (auto i: freq)
+    {
+        result += (i*log2(i));
+    }
+    return result*(-1);
+}
+
+double biagramEntropy(const vector<double> freq)
+{
+    double result = 0.0;
+    for (auto i: freq)
+    {
+        result += (i*log2(i));
+    }
+    return result*(-1)/2;
+}
 
