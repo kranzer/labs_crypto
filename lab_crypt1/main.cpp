@@ -8,11 +8,28 @@ using namespace std;
 
 map<char, int> symbolFrequency(const char *);
 map<string, int> biagramFrequency(const char *);
-double symbolEntropy(const vector<double>);
-double biagramEntropy(const vector<double>);
+double symbolEntropy(const vector<double>&);
+double biagramEntropy(const vector<double>&);
+
 int main()
 {
-    const char *a = "afasfasfasf";
+    setlocale (LC_CTYPE,"rus");
+    FILE * in;
+    in=fopen("text.txt","r");
+    char c;
+    char *a=new char[5000000];
+    int n;
+    n=0;
+    while (fscanf(in,"%c",&c) != EOF)
+    {
+        a[n++] = c;
+        if ((c==' ' || c=='\t' || c=='\n') && a[n-1]!=' ')
+        {
+            a[n++]=' ';
+        }
+    }
+    cout << a;
+    fclose(in);
     map <char, int>symbolFrequencyTable = symbolFrequency(a);
     vector<double> sym_vec = {};
 
@@ -23,18 +40,19 @@ int main()
         sym_vec.push_back(frequency);
 
     }
+
     cout << "H1= " << symbolEntropy(sym_vec) << endl;
+
     map <string, int>biagramFrequencyTable = biagramFrequency(a);
     vector<double> bia_vec = {};
-
     for(auto const &it: biagramFrequencyTable)
     {
         double frequency = double(it.second) / biagramFrequencyTable.size();
         cout << it.first << " - " << frequency << endl;
         bia_vec.push_back(frequency);
     }
-    cout << "H2= " << biagramEntropy(bia_vec) << endl;
 
+    cout << "H2= " << biagramEntropy(bia_vec) << endl;
 }
 
 map<char, int> symbolFrequency(const char *text)
@@ -75,20 +93,20 @@ map<string, int> biagramFrequency(const char *text)
     return frequencyTable;
 }
 
-double symbolEntropy(const vector<double> freq)
+double symbolEntropy(const vector<double>& freq)
 {
     double result = 0.0;
-    for (auto i: freq)
+    for (const auto i: freq)
     {
         result += (i*log2(i));
     }
     return result*(-1);
 }
 
-double biagramEntropy(const vector<double> freq)
+double biagramEntropy(const vector<double>& freq)
 {
     double result = 0.0;
-    for (auto i: freq)
+    for (const auto i: freq)
     {
         result += (i*log2(i));
     }
