@@ -1,41 +1,30 @@
 #include <iostream>
 #include <map>
-#include <string.h>
+#include <string>
 #include <vector>
 #include <cmath>
-
+#include <fstream>
+#include <streambuf>
+#include <locale>
 using namespace std;
 
-map<char, int> symbolFrequency(const char *);
-map<string, int> biagramFrequency(const char *);
+map<char, int> symbolFrequency(const string&);
+map<string, int> biagramFrequency(const string&);
 double symbolEntropy(const vector<double>&);
 double biagramEntropy(const vector<double>&);
 
 int main()
 {
-    setlocale (LC_CTYPE,"rus");
-    FILE * in;
-    in=fopen("text.txt","r");
-    char c;
-    char *a=new char[5000000];
-    int n;
-    n=0;
-    while (fscanf(in,"%c",&c) != EOF)
-    {
-        a[n++] = c;
-        if ((c==' ' || c=='\t' || c=='\n') && a[n-1]!=' ')
-        {
-            a[n++]=' ';
-        }
-    }
-    cout << a;
-    fclose(in);
+    setlocale(LC_ALL, "ru_RU.UTF8");
+    std::ifstream input1("text1.txt", std::ios::binary);
+    std::string a((std::istreambuf_iterator<char>(input1)),
+                         {});
     map <char, int>symbolFrequencyTable = symbolFrequency(a);
     vector<double> sym_vec = {};
 
     for(auto const &it: symbolFrequencyTable)
     {
-        double frequency = double(it.second) / strlen(a);
+        double frequency = double(it.second) / a.length();
         cout << it.first << " - " << frequency << endl;
         sym_vec.push_back(frequency);
 
@@ -48,17 +37,17 @@ int main()
     for(auto const &it: biagramFrequencyTable)
     {
         double frequency = double(it.second) / biagramFrequencyTable.size();
-        cout << it.first << " - " << frequency << endl;
+        cout << it.first << " - " << it.second << endl;
         bia_vec.push_back(frequency);
     }
 
     cout << "H2= " << biagramEntropy(bia_vec) << endl;
 }
 
-map<char, int> symbolFrequency(const char *text)
+map<char, int> symbolFrequency(const string& text)
 {
     map<char, int> frequencyTable = {};
-    for(const char *symbol = text; *symbol; ++symbol)
+    for(string::const_iterator symbol = text.begin(); symbol != text.end(); ++symbol)
     {
         if(frequencyTable.find(*symbol) != frequencyTable.end())
         {
@@ -72,10 +61,10 @@ map<char, int> symbolFrequency(const char *text)
     return frequencyTable;
 }
 
-map<string, int> biagramFrequency(const char *text)
+map<string, int> biagramFrequency(const string& text)
 {
     map<string, int> frequencyTable = {};
-    for(const char *symbol = text; *symbol; ++symbol)
+    for(string::const_iterator symbol = text.begin(); symbol != text.end(); ++symbol)
     {
         string buffer = "";
         buffer.push_back(*symbol);
@@ -112,4 +101,3 @@ double biagramEntropy(const vector<double>& freq)
     }
     return result*(-1)/2;
 }
-
